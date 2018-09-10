@@ -30,5 +30,6 @@ endfunction()
 
 addlslbench(Bounce cpp)
 addlslbench(SpeedTest cpp)
+addlslbench(PushSamples cpp)
 #addlslbench(StressTest cpp)
 #addlslbench(SyncTest cpp)
