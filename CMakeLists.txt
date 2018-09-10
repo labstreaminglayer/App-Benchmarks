@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.6)
-project(Benchmarks)
+cmake_minimum_required(VERSION 3.5)
+project(Benchmarks
+	VERSION 1.12.0
+	LANGUAGES CXX)
 
 if(NOT TARGET LSL::lsl)
 	# when building out of tree LSL_ROOT needs to be specified on the cmd line
