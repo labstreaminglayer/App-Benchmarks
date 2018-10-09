@@ -12,6 +12,8 @@ int main(int, char**) {
 	const int numBounces = 10000;
 	double timestamps[numBounces][2];
 
+	std::cout << "LSL version info: " << lsl::library_info() << std::endl;
+
 	lsl::stream_outlet outlet(lsl::stream_info("Sender", "Bounce", 1, lsl::IRREGULAR_RATE, lsl::cf_int32));
 	auto found_stream_info = lsl::resolve_stream("name", "Sender");
 	if (found_stream_info.empty()) throw std::runtime_error("Sender outlet not found!");

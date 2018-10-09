@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 	const bool push_single = argc > 5 && *argv[5] == '1';
 	const bool pull_single = argc > 6 && *argv[6] == '1';
 
+	std::cout << "LSL version info: " << lsl::library_info() << std::endl;
 	std::cout << "Starting speed test with " << numchans << " channels ("
 	          << (format_str ? "string" : "float32") << "), " << maxsamples << " samples\n"
 	          << "Pushing single samples: " << push_single << "\nPulling single samples: " << pull_single

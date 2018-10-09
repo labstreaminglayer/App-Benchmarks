@@ -129,6 +129,7 @@ template <class T> void run_inlet(const std::string& type, bool in_chunks, int b
 }
 
 int main(int argc, char* argv[]) {
+	std::cout << "LSL version info: " << lsl::library_info() << std::endl;
 	const double srate = argc > 1 ? std::stod(argv[1]) : 5000000;
 	const int numchans = argc > 2 ? std::stoi(argv[2]) : 1;
 	const std::map<std::string, lsl::channel_format_t> m{
