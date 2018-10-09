@@ -2,29 +2,28 @@
 #include <atomic>
 #include <chrono>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 #include <lsl_cpp.h>
 #include <map>
 #include <string>
-#include <thread>
 
 using std::chrono::milliseconds;
 
 template <typename T>
-void push_fn(const std::vector<T> buffer, bool push_single, uint chunksize, lsl::stream_outlet& out) {
+void push_fn(const std::vector<T>& buffer, bool push_single, uint32_t chunksize, lsl::stream_outlet& out) {
 	if (push_single)
-		for (uint i = 0; i < chunksize; ++i) out.push_sample(buffer);
+		for (uint32_t i = 0; i < chunksize; ++i) out.push_sample(buffer.data());
 	else
 		out.push_chunk_multiplexed(buffer, out.info().channel_count() * chunksize);
 }
 template <typename T>
-void pull_fn(std::vector<T> buffer, bool pull_single, uint chunksize, int numchans, lsl::stream_inlet& in) {
-	std::vector<std::vector<T>> buffer_;
+void pull_fn(std::vector<T>& buffer, bool pull_single, uint32_t chunksize, uint32_t numchans, lsl::stream_inlet& in) {
+	buffer.resize(numchans * chunksize);
 	if (pull_single)
-		for (uint i = 0; i < chunksize; ++i) in.pull_sample(buffer);
+		for (uint32_t i = 0; i < chunksize; ++i) in.pull_sample(buffer.data(), numchans);
 	else
-		//in.pull_chunk_multiplexed(buffer.data(), nullptr, numchans * chunksize, 0);
-		in.pull_chunk(buffer_);
+		in.pull_chunk_multiplexed(buffer.data(), nullptr, numchans * chunksize, 0);
 }
 
 int main(int argc, char* argv[]) {
@@ -40,10 +39,10 @@ int main(int argc, char* argv[]) {
 		          << "Pushes the default number of samples in 5 string channels" << std::endl;
 		return 0;
 	}
-	const uint numchans = argc > 1 ? std::stoul(argv[1]) : 1;
+	const uint32_t numchans = argc > 1 ? std::stoul(argv[1]) : 1;
 	const auto format_str = argc > 2 && *argv[2] == '1';
-	const uint maxsamples = argc > 3 ? std::stoul(argv[3]) : 5000000;
-	const uint chunksize = argc > 4 ? std::stoul(argv[4]) : 10000;
+	const uint32_t maxsamples = argc > 3 ? std::stoul(argv[3]) : 5000000;
+	const uint32_t chunksize = argc > 4 ? std::stoul(argv[4]) : 10000;
 	const bool push_single = argc > 5 && *argv[5] == '1';
 	const bool pull_single = argc > 6 && *argv[6] == '1';
 
@@ -64,7 +63,7 @@ int main(int argc, char* argv[]) {
 		inlet.open_stream(2.);
 		outlet.wait_for_consumers(2.);
 
-		const uint buffersize = numchans * chunksize;
+		const uint32_t buffersize = numchans * chunksize;
 		std::vector<float> samples_float(format_str ? 0 : buffersize, 17.3f);
 		std::vector<std::string> samples_str(format_str ? buffersize : 0, "test");
 
@@ -74,7 +73,7 @@ int main(int argc, char* argv[]) {
 			push_fn<float>(samples_float, false, chunksize, outlet);
 
 		double outlettime = 0, inlettime = 0;
-		for (uint chunk = 0; chunk < maxsamples / chunksize; chunk++) {
+		for (uint32_t chunk = 0; chunk < maxsamples / chunksize; chunk++) {
 			double starttime = lsl::lsl_local_clock();
 			if (format_str)
 				push_fn(samples_str, push_single, chunksize, outlet);

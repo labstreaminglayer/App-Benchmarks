@@ -27,7 +27,7 @@ template <class T> void init_sample(int numchan, std::vector<T>& sample) {
 template <class T>
 void run_outlet(const lsl::stream_info& info, int chunk_len, unsigned int max_samples) {
 	try {
-		const auto numchan = (uint) info.channel_count();
+		const auto numchan = (uint32_t) info.channel_count();
 		const double srate = info.nominal_srate();
 		// create a new outlet
 		lsl::stream_outlet outlet(info);
@@ -43,7 +43,7 @@ void run_outlet(const lsl::stream_info& info, int chunk_len, unsigned int max_sa
 		for (unsigned int target, written = 0; written < max_samples && !stop_outlet;) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(chunk_len));
 			target = static_cast<unsigned int>((lsl::local_clock() - start_time) * srate);
-			auto num_elements = std::min((target - written) * numchan, (uint) chunk.size());
+			auto num_elements = std::min((target - written) * numchan, (uint32_t) chunk.size());
 			outlet.push_chunk_multiplexed(&chunk[0], num_elements);
 			written += num_elements / numchan;
 		}
@@ -58,7 +58,7 @@ template <class T>
 void run_singlesample_outlet(const lsl::stream_info& info, unsigned int max_samples) {
 	try {
 		// create a new streaminfo and outlet
-		const auto numchan = (uint) info.channel_count();
+		const auto numchan = (uint32_t) info.channel_count();
 		const double srate = info.nominal_srate();
 		lsl::stream_outlet outlet(info);
 		std::cout << "outlet started." << std::endl;
@@ -99,11 +99,11 @@ template <class T> void run_inlet(const std::string& type, bool in_chunks, int b
 		double ts, last_ts;
 
 		// run
-		for (uint k = 0, num_samples = 0; !stop_inlet; k++) {
+		for (uint64_t k = 0, num_samples = 0; !stop_inlet; k++) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			if (in_chunks) {
 				inlet.pull_chunk(chunk);
-				num_samples += static_cast<uint>(chunk.size());
+				num_samples += static_cast<uint64_t>(chunk.size());
 			} else {
 				while ((ts = inlet.pull_sample(sample, 0.0)) > 0) {
 					last_ts = ts;
