@@ -1,36 +1,31 @@
 #include <atomic>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <random>
 #include <lsl_cpp.h>
 #include <thread>
 #include <utility>
 using namespace std;
 
 // key stress constants
-int max_outlets = 15;
-int max_inlets = 20;
-int min_chunk_len_ms = 1;
-int max_chunk_len_ms = 100;
-int max_inlet_poll_interval_ms = 100;
-int inlet_max_failure_interval_ms = 2000;
-int outlet_max_failure_interval_ms = 2000;
-int inlet_min_failure_interval_ms = 1;
-int outlet_min_failure_interval_ms = 1;
-int max_outlet_duration = 10;
-int max_inlet_duration = 10;
-double spawn_inlet_interval = 0.5;
-double spawn_outlet_interval = 0.5;
-int max_srate = 1000;
-int max_channels = 10;
-int max_buffered = 6;
+const int max_outlets = 15;
+const int max_inlets = 20;
+const int min_chunk_len_ms = 1;
+const int max_chunk_len_ms = 100;
+const int max_inlet_poll_interval_ms = 100;
+const int outlet_max_failure_interval_ms = 2000;
+const int inlet_min_failure_interval_ms = 1;
+const int max_outlet_duration = 10;
+const double spawn_inlet_interval = 0.5;
+const double spawn_outlet_interval = 0.5;
+const int max_srate = 1000;
+const int max_channels = 10;
+const int max_buffered = 6;
 
 // misc parameters
-int max_chunk_oversize_factor = 5;
-int max_samples = 10000000;
+const int max_chunk_oversize_factor = 5;
+const int max_samples = 10000000;
 
 std::atomic<int> num_outlets(0);
 std::atomic<int> num_inlets(0);
@@ -77,8 +72,7 @@ void run_outlet(const double duration_ = 0.0, const string& name_ = "", const st
 		                                  : chunk_len_;
 
 		// create a new streaminfo
-		lsl::stream_info info(name, type, numchan, srate, fmt,
-		                      boost::uuids::to_string(boost::uuids::random_generator()()));
+		lsl::stream_info info(name, type, numchan, srate, fmt, std::to_string(rand()));
 
 		// initialize data to send
 		vector<float> chunk(
