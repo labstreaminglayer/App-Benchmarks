@@ -13,16 +13,20 @@ int main(int, char**) {
 	double timestamps[numBounces][2];
 
 	std::cout << "LSL version info: " << lsl::library_info() << std::endl;
-
-	lsl::stream_outlet outlet(lsl::stream_info("Sender", "Bounce", 1, lsl::IRREGULAR_RATE, lsl::cf_int32));
+	lsl::stream_info info("Sender", "Bounce", 1, 5.2, lsl::cf_int32);
+	lsl::stream_outlet outlet(info);
+	std::cout << info.as_xml() << std::endl;
 	auto found_stream_info = lsl::resolve_stream("name", "Sender");
 	if (found_stream_info.empty()) throw std::runtime_error("Sender outlet not found!");
 	lsl::stream_info si = found_stream_info[0];
 	std::cout << "Found " << si.name() << '@' << si.hostname() << std::endl;
+	std::cout << si.as_xml() << std::endl;
 
 	lsl::stream_inlet inlet(si);
+	std::cout << "Constructed inlet" << std::endl;
 
-	inlet.open_stream(2);
+	inlet.open_stream(4);
+	std::cout << "Opened stream" << std::endl;
 	outlet.wait_for_consumers(2);
 
 	std::cout << "Starting bounce loop" << std::endl;
