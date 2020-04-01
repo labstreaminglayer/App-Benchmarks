@@ -74,19 +74,19 @@ int main(int argc, char* argv[]) {
 
 		double outlettime = 0, inlettime = 0;
 		for (uint32_t chunk = 0; chunk < maxsamples / chunksize; chunk++) {
-			double starttime = lsl::lsl_local_clock();
+			double starttime = lsl::local_clock();
 			if (format_str)
 				push_fn(samples_str, push_single, chunksize, outlet);
 			else
 				push_fn(samples_float, push_single, chunksize, outlet);
-			outlettime += lsl::lsl_local_clock() - starttime;
+			outlettime += lsl::local_clock() - starttime;
 
-			starttime = lsl::lsl_local_clock();
+			starttime = lsl::local_clock();
 			if (format_str)
 				pull_fn(samples_str, pull_single, chunksize, numchans, inlet);
 			else
 				pull_fn(samples_float, pull_single, chunksize, numchans, inlet);
-			inlettime += lsl::lsl_local_clock() - starttime;
+			inlettime += lsl::local_clock() - starttime;
 		}
 
 		auto printstats =
